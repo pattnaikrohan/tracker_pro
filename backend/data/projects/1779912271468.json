@@ -1,0 +1,228 @@
+{
+    "id": 1779912271468,
+    "title": "End of month Dashboard",
+    "description": "End of month Dashboard",
+    "complexity_client": "Medium",
+    "complexity_dev": "High",
+    "agreed_complexity": "High",
+    "estimated_days_client": 15,
+    "estimated_days_dev": 15,
+    "agreed_days": 15,
+    "client_approved_estimate": true,
+    "attachments": [],
+    "comments": [
+        {
+            "id": 1779912297569,
+            "request_id": 0,
+            "author_role": "Cozentus",
+            "text": "System: Cozentus updated Project Dev Estimate (Days) to 15",
+            "created_at": "2026-05-27T20:04:57.398851"
+        },
+        {
+            "id": 1779912297678,
+            "request_id": 0,
+            "author_role": "Cozentus",
+            "text": "System: Cozentus updated Project Dev Complexity to High",
+            "created_at": "2026-05-27T20:04:57.398880"
+        },
+        {
+            "id": 1779912318308,
+            "request_id": 0,
+            "author_role": "AAW",
+            "text": "System: AAW updated Project Agreed Delivery Days to 15",
+            "created_at": "2026-05-27T20:05:17.611731"
+        },
+        {
+            "id": 1779912317698,
+            "request_id": 0,
+            "author_role": "AAW",
+            "text": "System: AAW updated Project Agreed Complexity to High",
+            "created_at": "2026-05-27T20:05:17.611751"
+        }
+    ],
+    "created_at": "2026-05-27T20:04:31.468669",
+    "change_requests": [
+        {
+            "id": 1779912471260,
+            "project_id": 1779912271468,
+            "title": "update the application to have light theme",
+            "request_text": "update the application to have light theme",
+            "priority": "Medium",
+            "type": "Enhancement",
+            "status": "Completed",
+            "complexity_client": "Medium",
+            "complexity_dev": "Medium",
+            "agreed_complexity": "Medium",
+            "estimated_days_client": 1,
+            "estimated_days_dev": 8,
+            "agreed_days": 6,
+            "progress_percent": 100,
+            "deadline": "2026-05-30",
+            "assigned_to": "Rohan",
+            "dev_notes": "",
+            "hours_spent": 0.0,
+            "is_blocked": false,
+            "blocker_reason": "Api key failed",
+            "client_approved_estimate": false,
+            "escalated": false,
+            "tags": "",
+            "attachments": [],
+            "created_at": "2026-05-27T20:07:51.260202",
+            "updated_at": "2026-06-01T10:59:47.019380",
+            "completed_at": "2026-06-01T10:59:47.019360",
+            "comments": [
+                {
+                    "id": 1779912519226,
+                    "request_id": 1779912471260,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Dev Estimate (Days) to 8",
+                    "created_at": "2026-05-27T20:08:39.055267"
+                },
+                {
+                    "id": 1779912519752,
+                    "request_id": 1779912471260,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Agreed Delivery Days to 6",
+                    "created_at": "2026-05-27T20:08:39.055289"
+                },
+                {
+                    "id": 1779912519335,
+                    "request_id": 1779912471260,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Dev Complexity to Medium",
+                    "created_at": "2026-05-27T20:08:39.055294"
+                },
+                {
+                    "id": 1779912519142,
+                    "request_id": 1779912471260,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Agreed Complexity to ",
+                    "created_at": "2026-05-27T20:08:39.055298"
+                },
+                {
+                    "id": 1779912849429,
+                    "request_id": 1779912471260,
+                    "author_role": "AAW",
+                    "text": "System: AAW updated Agreed Complexity to Medium",
+                    "created_at": "2026-05-27T20:14:09.342521"
+                },
+                {
+                    "id": 1779913737548,
+                    "request_id": 1779912471260,
+                    "author_role": "AAW",
+                    "text": "any update on this ?",
+                    "created_at": "2026-05-27T20:28:57.548654"
+                },
+                {
+                    "id": 1779913805368,
+                    "request_id": 1779912471260,
+                    "author_role": "Cozentus",
+                    "text": "This has been completed.",
+                    "created_at": "2026-05-27T20:30:05.368935"
+                },
+                {
+                    "id": 1780291253333,
+                    "text": "System: Task moved to **In Progress** by Cozentus. @Manager @Client please take note.",
+                    "author_role": "System",
+                    "created_at": "2026-06-01T10:50:53.333813Z"
+                },
+                {
+                    "id": 1780291698402,
+                    "text": "System: Task moved to **Completed** by Cozentus. @Manager @Client please take note.",
+                    "author_role": "System",
+                    "created_at": "2026-06-01T10:58:18.402328Z"
+                },
+                {
+                    "id": 1780291736391,
+                    "text": "System: Task moved to **In Progress** by Cozentus. @Manager @Client please take note.",
+                    "author_role": "System",
+                    "created_at": "2026-06-01T10:58:56.391288Z"
+                },
+                {
+                    "id": 1780291787019,
+                    "text": "System: Task moved to **Completed** by AAW. @Manager @Client please take note.",
+                    "author_role": "System",
+                    "created_at": "2026-06-01T10:59:47.019374Z"
+                }
+            ],
+            "subtasks": [],
+            "time_logs": []
+        },
+        {
+            "id": 1780308934316,
+            "project_id": 1779912271468,
+            "title": "categorization summary",
+            "request_text": "Add a basic summary to categorize the dashboard",
+            "priority": "Medium",
+            "type": "Enhancement",
+            "status": "Completed",
+            "complexity_client": "Medium",
+            "complexity_dev": "Medium",
+            "agreed_complexity": "Medium",
+            "estimated_days_client": 6,
+            "estimated_days_dev": 7,
+            "agreed_days": 7,
+            "progress_percent": 100,
+            "deadline": "2026-06-08T10:19:27.807452",
+            "assigned_to": "Rohan",
+            "dev_notes": "",
+            "hours_spent": 0.0,
+            "is_blocked": false,
+            "blocker_reason": "",
+            "client_approved_estimate": false,
+            "escalated": false,
+            "tags": "",
+            "attachments": [],
+            "created_at": "2026-06-01T10:15:34.316199",
+            "updated_at": "2026-06-01T10:38:26.168095",
+            "completed_at": "2026-06-01T10:38:26.168075",
+            "comments": [
+                {
+                    "id": 1780309012342,
+                    "request_id": 1780308934316,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Dev Estimate (Days) to 7",
+                    "created_at": "2026-06-01T10:16:51.760113"
+                },
+                {
+                    "id": 1780309012366,
+                    "request_id": 1780308934316,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Dev Complexity to Medium",
+                    "created_at": "2026-06-01T10:16:51.760135"
+                },
+                {
+                    "id": 1780309012620,
+                    "request_id": 1780308934316,
+                    "author_role": "Cozentus",
+                    "text": "System: Cozentus updated Agreed Complexity to ",
+                    "created_at": "2026-06-01T10:16:51.760149"
+                },
+                {
+                    "id": 1780309035261,
+                    "request_id": 1780308934316,
+                    "author_role": "AAW",
+                    "text": "System: AAW updated Agreed Complexity to Medium",
+                    "created_at": "2026-06-01T10:17:14.401929"
+                },
+                {
+                    "id": 1780309052909,
+                    "request_id": 1780308934316,
+                    "author_role": "AAW",
+                    "text": "System: AAW updated Client Estimate (Days) to 6",
+                    "created_at": "2026-06-01T10:17:31.913633"
+                },
+                {
+                    "id": 1780309168505,
+                    "request_id": 1780308934316,
+                    "author_role": "AAW",
+                    "text": "System: AAW updated Agreed Delivery Days to 7",
+                    "created_at": "2026-06-01T10:19:27.809615"
+                }
+            ],
+            "subtasks": [],
+            "time_logs": []
+        }
+    ],
+    "blockers": []
+}

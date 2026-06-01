@@ -1,0 +1,32 @@
+{
+  "steve@aaw.com": {
+    "password": "Steve@123",
+    "role": "AAW",
+    "name": "Steve (Client)",
+    "permissions": ["can_approve_estimates", "can_submit_requests", "can_close_requests"]
+  },
+  "claire@aaw.com": {
+    "password": "Claire@123",
+    "role": "AAW",
+    "name": "Claire (Client)",
+    "permissions": ["can_approve_estimates", "can_submit_requests", "can_close_requests"]
+  },
+  "rohan@cozentus.com": {
+    "password": "Rohan@123",
+    "role": "Cozentus",
+    "name": "Rohan (Dev)",
+    "permissions": ["can_update_status", "can_estimate", "can_log_time"]
+  },
+  "abhishek@cozentus.com": {
+    "password": "Abhishek@123",
+    "role": "Cozentus",
+    "name": "Abhishek (Dev)",
+    "permissions": ["can_update_status", "can_estimate", "can_log_time"]
+  },
+  "sandeep@cozentus.com": {
+    "password": "Sandeep@123",
+    "role": "Manager",
+    "name": "Sandeep (Manager)",
+    "permissions": ["can_delete_project", "can_view_analytics", "can_manage_users", "can_update_status"]
+  }
+}

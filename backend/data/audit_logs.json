@@ -1,0 +1,253 @@
+[
+    {
+        "id": "c52a63ad-a0ce-4b12-878a-7c3ebc7a100b",
+        "timestamp": "2026-06-01T10:15:34.335742Z",
+        "event_type": "NEW_CHANGE_REQUEST",
+        "details": {
+            "project_id": 1779912271468,
+            "request_id": 1780308934316,
+            "title": "categorization summary"
+        }
+    },
+    {
+        "id": "a55da34a-2ccd-4ed6-a86d-b9966d278432",
+        "timestamp": "2026-06-01T10:16:51.781417Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "In Progress",
+            "fields": [
+                "status",
+                "priority",
+                "complexity_client",
+                "complexity_dev",
+                "agreed_complexity",
+                "estimated_days_client",
+                "estimated_days_dev",
+                "progress_percent",
+                "deadline",
+                "assigned_to",
+                "dev_notes",
+                "hours_spent",
+                "is_blocked",
+                "blocker_reason",
+                "client_approved_estimate",
+                "escalated",
+                "tags"
+            ]
+        }
+    },
+    {
+        "id": "0b5fdae7-4041-4549-af78-32180a462006",
+        "timestamp": "2026-06-01T10:17:14.418074Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "In Progress",
+            "fields": [
+                "agreed_complexity"
+            ]
+        }
+    },
+    {
+        "id": "4fa5619b-d424-47ea-ad73-89ce91c2c62a",
+        "timestamp": "2026-06-01T10:17:31.935299Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "In Progress",
+            "fields": [
+                "status",
+                "priority",
+                "complexity_client",
+                "complexity_dev",
+                "agreed_complexity",
+                "estimated_days_client",
+                "estimated_days_dev",
+                "progress_percent",
+                "deadline",
+                "assigned_to",
+                "dev_notes",
+                "hours_spent",
+                "is_blocked",
+                "blocker_reason",
+                "client_approved_estimate",
+                "escalated",
+                "tags"
+            ]
+        }
+    },
+    {
+        "id": "695b104c-c2fc-4758-b400-63f62167beef",
+        "timestamp": "2026-06-01T10:18:48.209468Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "In Progress",
+            "fields": [
+                "status",
+                "priority",
+                "complexity_client",
+                "complexity_dev",
+                "agreed_complexity",
+                "estimated_days_client",
+                "estimated_days_dev",
+                "progress_percent",
+                "deadline",
+                "assigned_to",
+                "dev_notes",
+                "hours_spent",
+                "is_blocked",
+                "blocker_reason",
+                "client_approved_estimate",
+                "escalated",
+                "tags"
+            ]
+        }
+    },
+    {
+        "id": "a2ef385f-9405-49d1-a084-8ca0bf91316e",
+        "timestamp": "2026-06-01T10:19:27.827598Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "In Progress",
+            "fields": [
+                "agreed_days",
+                "deadline"
+            ]
+        }
+    },
+    {
+        "id": "4d5ad36d-8799-4c86-8a41-df8161af343d",
+        "timestamp": "2026-06-01T10:38:26.177002Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1780308934316,
+            "status": "Completed",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "ec1c27b3-6048-4647-8c17-8d8f1caee1ac",
+        "timestamp": "2026-06-01T10:38:48.540287Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "In Progress",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "39855639-2f2a-490f-b3bb-20104b53a2b9",
+        "timestamp": "2026-06-01T10:38:49.801249Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "Pending",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "ad731fcf-fc9b-42cd-8747-696bcaad7358",
+        "timestamp": "2026-06-01T10:38:59.498082Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "In Progress",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "afdd9b14-17b3-46ee-999a-376bc02f4167",
+        "timestamp": "2026-06-01T10:39:01.044831Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "Completed",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "a71b1bd3-aefc-4a38-a19a-08ebf3316986",
+        "timestamp": "2026-06-01T10:39:02.529574Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "In Progress",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "b5a00056-6552-4629-9e93-6d7ca5e5f3a9",
+        "timestamp": "2026-06-01T10:39:04.666276Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "Pending",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "774592d0-0f7a-46f7-a719-e3727357f9ce",
+        "timestamp": "2026-06-01T10:50:53.341127Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "In Progress",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "7a1315dc-6e6e-4b0e-a621-05d6556222d0",
+        "timestamp": "2026-06-01T10:58:18.407330Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "Completed",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "4875a802-a3a4-4b58-932e-d253ac85ce5f",
+        "timestamp": "2026-06-01T10:58:56.398299Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "In Progress",
+            "fields": [
+                "status"
+            ]
+        }
+    },
+    {
+        "id": "cd7d8f52-9a69-4b3f-806a-559d24a041bd",
+        "timestamp": "2026-06-01T10:59:47.026389Z",
+        "event_type": "UPDATE_CHANGE_REQUEST",
+        "details": {
+            "request_id": 1779912471260,
+            "status": "Completed",
+            "fields": [
+                "status"
+            ]
+        }
+    }
+]
