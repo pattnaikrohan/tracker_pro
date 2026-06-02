@@ -64,3 +64,4 @@ jobs:
           app-name: 'tracker-pro'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_49AB0320F35942E6BCA7D0C3349932AB }}
+          startup-command: 'uvicorn main:app --host 0.0.0.0 --port 8000'
