@@ -6,7 +6,7 @@ import ProjectDetails from './pages/ProjectDetails';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import GlobalSearch from './GlobalSearch';
-import { API_BASE_URL } from './config';
+import { API_BASE_URL, WS_BASE_URL } from './config';
 
 // Role context so sub-pages know who is logged in
 export const RoleContext = createContext();
@@ -422,7 +422,7 @@ export default function App() {
     let reconnectTimeout;
     
     const connectWS = () => {
-      ws = new WebSocket('ws://localhost:8000/api/ws');
+      ws = new WebSocket(`${WS_BASE_URL}/api/ws`);
       wsRef.current = ws;
       ws.onmessage = (event) => {
         try {

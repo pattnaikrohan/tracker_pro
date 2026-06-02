@@ -6,6 +6,7 @@ import {
 import { Download, TrendingUp, Clock, CheckCircle2, AlertTriangle, Layers, MessageSquare, Target, Handshake, CalendarClock, Users, ShieldAlert } from 'lucide-react';
 import { RoleContext, SyncContext } from '../App';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 const PIE_COLORS = ['#059669', '#2563EB', '#94A3B8', '#DC2626'];
 const PRIORITY_COLORS = ['#10B981', '#F59E0B', '#F97316', '#EF4444'];
@@ -40,7 +41,7 @@ export default function Analytics() {
 
   const fetchMetrics = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/analytics/metrics');
+      const res = await fetch(`${API_BASE_URL}/api/analytics/metrics`);
       if (res.ok) setMetrics(await res.json());
     } catch (e) { console.error(e); }
   };
