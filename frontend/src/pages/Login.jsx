@@ -93,7 +93,7 @@ export default function Login({ onLogin }) {
         <div style={{ position: 'relative', zIndex: 1, animation: 'fadeSlideUp 0.6s ease-out' }}>
           {/* AAW Logo directly above TrackerPro */}
           <div style={{ marginBottom: '24px' }}>
-            <img src="/logo.png" alt="TrackerPro Logo" style={{ height: '48px', objectFit: 'contain' }} />
+            <img src="/aaw.png" alt="AAW Logo" style={{ height: '40px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
           </div>
 
           <div style={{
