@@ -11,16 +11,13 @@ from datetime import datetime, timedelta
 from fastapi.staticfiles import StaticFiles
 
 import schemas
+import config
 
 app = FastAPI(title="AAW Project Tracker API (File Based)")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://black-pebble-080918a00.7.azurestaticapps.net"
-    ],
+    allow_origins=config.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
