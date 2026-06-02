@@ -10,7 +10,7 @@ import re
 from datetime import datetime, timedelta
 from fastapi.staticfiles import StaticFiles
 
-from . import schemas
+import schemas
 
 app = FastAPI(title="AAW Project Tracker API (File Based)")
 
