@@ -4,11 +4,11 @@ import { Lock, User, Activity, ArrowRight, Shield, MessageSquare, BarChart2 } fr
 import { API_BASE_URL } from '../config';
 
 const DEMO_ACCOUNTS = [
-  { username: 'steve@aaw.com', password: 'Steve@123', label: 'Steve (Client)', role: 'AAW', desc: 'Submit requests & track projects', color: 'linear-gradient(135deg, #4F46E5, #7C3AED)', icon: <Shield size={20} /> },
-  { username: 'claire@aaw.com', password: 'Claire@123', label: 'Claire (Client)', role: 'AAW', desc: 'Submit requests & track projects', color: 'linear-gradient(135deg, #4F46E5, #7C3AED)', icon: <Shield size={20} /> },
-  { username: 'rohan@cozentus.com', password: 'Rohan@123', label: 'Rohan (Dev)', role: 'Cozentus', desc: 'Update status & respond to requests', color: 'linear-gradient(135deg, #2563EB, #3B82F6)', icon: <MessageSquare size={20} /> },
-  { username: 'abhishek@cozentus.com', password: 'Abhishek@123', label: 'Abhishek (Dev)', role: 'Cozentus', desc: 'Update status & respond to requests', color: 'linear-gradient(135deg, #2563EB, #3B82F6)', icon: <MessageSquare size={20} /> },
-  { username: 'sandeep@cozentus.com', password: 'Sandeep@123', label: 'Sandeep (Manager)', role: 'Manager', desc: 'View analytics & team performance', color: 'linear-gradient(135deg, #059669, #10B981)', icon: <BarChart2 size={20} /> },
+  { username: 'steve@aaw.com', password: 'Steve@123', label: 'Steve', role: 'AAW', desc: 'Submit requests & track projects', color: 'linear-gradient(135deg, #4F46E5, #7C3AED)', icon: <Shield size={20} /> },
+  { username: 'claire@aaw.com', password: 'Claire@123', label: 'Claire', role: 'AAW', desc: 'Submit requests & track projects', color: 'linear-gradient(135deg, #4F46E5, #7C3AED)', icon: <Shield size={20} /> },
+  { username: 'rohan@cozentus.com', password: 'Rohan@123', label: 'Rohan', role: 'Cozentus', desc: 'Update status & respond to requests', color: 'linear-gradient(135deg, #2563EB, #3B82F6)', icon: <MessageSquare size={20} /> },
+  { username: 'abhishek@cozentus.com', password: 'Abhishek@123', label: 'Abhishek', role: 'Cozentus', desc: 'Update status & respond to requests', color: 'linear-gradient(135deg, #2563EB, #3B82F6)', icon: <MessageSquare size={20} /> },
+  { username: 'sandeep@cozentus.com', password: 'Sandeep@123', label: 'Sandeep', role: 'Manager', desc: 'View analytics & team performance', color: 'linear-gradient(135deg, #059669, #10B981)', icon: <BarChart2 size={20} /> },
 ];
 
 export default function Login({ onLogin }) {
