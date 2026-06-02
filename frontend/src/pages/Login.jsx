@@ -69,11 +69,6 @@ export default function Login({ onLogin }) {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Top Left Logo */}
-        <div style={{ position: 'absolute', top: '48px', left: '64px', zIndex: 10, animation: 'fadeIn 0.6s ease-out' }}>
-          <img src="/aaw.png" alt="AAW Logo" style={{ height: '48px', objectFit: 'contain' }} />
-        </div>
-
         {/* Decorative elements */}
         <div style={{
           position: 'absolute', top: '-10%', right: '-10%',
@@ -96,6 +91,11 @@ export default function Login({ onLogin }) {
         }} />
 
         <div style={{ position: 'relative', zIndex: 1, animation: 'fadeSlideUp 0.6s ease-out' }}>
+          {/* AAW Logo directly above TrackerPro */}
+          <div style={{ marginBottom: '24px' }}>
+            <img src="/aaw.png" alt="AAW Logo" style={{ height: '40px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+          </div>
+
           <div style={{
             display: 'flex', alignItems: 'center', gap: '14px',
             marginBottom: '48px'
