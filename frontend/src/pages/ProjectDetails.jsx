@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, CheckCircle, CheckCircle2, AlertCircle, AlertTriangle
 import { RoleContext, ToastContext, SyncContext } from '../App';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { API_BASE_URL } from '../config';
 
 const PRIORITY_CONFIG = {
   Critical: { icon: <Flame size={13} />, class: 'priority-critical', color: '#DC2626' },
@@ -89,19 +90,19 @@ export default function ProjectDetails() {
   }, [requests, blockers, location.search]);
 
   const fetchProjectDetails = async () => {
-    try { const r = await fetch(`http://localhost:8000/api/projects/${id}`); if (r.ok) setProject(await r.json()); else if (r.status === 404) navigate('/'); } catch (e) { console.error(e); }
+    try { const r = await fetch(`${API_BASE_URL}/api/projects/${id}`); if (r.ok) setProject(await r.json()); else if (r.status === 404) navigate('/'); } catch (e) { console.error(e); }
   };
   const fetchRequests = async () => {
-    try { const r = await fetch(`http://localhost:8000/api/projects/${id}/requests`); if (r.ok) setRequests(await r.json()); } catch (e) { console.error(e); }
+    try { const r = await fetch(`${API_BASE_URL}/api/projects/${id}/requests`); if (r.ok) setRequests(await r.json()); } catch (e) { console.error(e); }
   };
   const fetchBlockers = async () => {
-    try { const r = await fetch(`http://localhost:8000/api/projects/${id}/blockers`); if (r.ok) setBlockers(await r.json()); } catch (e) { console.error(e); }
+    try { const r = await fetch(`${API_BASE_URL}/api/projects/${id}/blockers`); if (r.ok) setBlockers(await r.json()); } catch (e) { console.error(e); }
   };
 
   const handleSubmitBlocker = async (e) => {
     e.preventDefault();
     try {
-      const r = await fetch(`http://localhost:8000/api/projects/${id}/blockers?role=${role}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newBlocker) });
+      const r = await fetch(`${API_BASE_URL}/api/projects/${id}/blockers?role=${role}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newBlocker) });
       if (r.ok) { setIsBlockerModalOpen(false); setNewBlocker({ title: '', description: '', severity: 'High', related_request_title: '' }); fetchBlockers(); fetchRequests(); showToast('Blocker reported!', 'error'); }
     } catch (e) { showToast('Failed to report blocker.', 'error'); }
   };
@@ -110,7 +111,7 @@ export default function ProjectDetails() {
     try {
       if (selectedBlocker?.is_request || blockerId.toString().startsWith('req-')) {
         const reqId = selectedBlocker?.request_id || blockerId.replace('req-', '');
-        const r = await fetch(`http://localhost:8000/api/requests/${reqId}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_blocked: false }) });
+        const r = await fetch(`${API_BASE_URL}/api/requests/${reqId}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_blocked: false }) });
         if (r.ok) {
            if (selectedBlocker && selectedBlocker.id === blockerId) {
              setSelectedBlocker(prev => ({...prev, status: 'Resolved'}));
@@ -120,7 +121,7 @@ export default function ProjectDetails() {
         return;
       }
 
-      const r = await fetch(`http://localhost:8000/api/blockers/${blockerId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Resolved' }) });
+      const r = await fetch(`${API_BASE_URL}/api/blockers/${blockerId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Resolved' }) });
       if (r.ok) { 
         const u = await r.json();
         if (selectedBlocker && selectedBlocker.id === blockerId) { setSelectedBlocker(u); }
@@ -138,7 +139,7 @@ export default function ProjectDetails() {
   const handleArchiveProject = async () => {
     if (!window.confirm("Are you sure you want to archive this project? It will be removed from the active dashboard.")) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/projects/${projectId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'Archived' })
       });
@@ -156,9 +157,9 @@ export default function ProjectDetails() {
     try {
       let r;
       if (selectedBlocker.is_request) {
-        r = await fetch(`http://localhost:8000/api/requests/${selectedBlocker.request_id}/blocker_comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newBlockerComment }) });
+        r = await fetch(`${API_BASE_URL}/api/requests/${selectedBlocker.request_id}/blocker_comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newBlockerComment }) });
       } else {
-        r = await fetch(`http://localhost:8000/api/blockers/${selectedBlocker.id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newBlockerComment }) });
+        r = await fetch(`${API_BASE_URL}/api/blockers/${selectedBlocker.id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newBlockerComment }) });
       }
       if (r.ok) { 
         const c = await r.json(); 
@@ -179,7 +180,7 @@ export default function ProjectDetails() {
 
   const handleUpdateProject = async (updateData) => {
     try {
-      const r = await fetch(`http://localhost:8000/api/projects/${id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData) });
+      const r = await fetch(`${API_BASE_URL}/api/projects/${id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData) });
       if (r.ok) {
          setProject(await r.json());
          showToast('Project updated!', 'success');
@@ -191,7 +192,7 @@ export default function ProjectDetails() {
     e.preventDefault();
     try {
       const body = { title: newRequest.title, request_text: newRequest.request_text, priority: newRequest.priority, type: newRequest.type, deadline: newRequest.deadline || null, estimated_days_client: newRequest.estimated_days_client ? parseInt(newRequest.estimated_days_client) : null, complexity_client: newRequest.complexity_client, attachments: newRequest.attachments };
-      const r = await fetch(`http://localhost:8000/api/projects/${id}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const r = await fetch(`${API_BASE_URL}/api/projects/${id}/requests`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (r.ok) { setIsSubmitModalOpen(false); setNewRequest({ title: '', request_text: '', priority: 'Medium', type: 'Enhancement', deadline: '', estimated_days_client: '', complexity_client: 'Medium', attachments: [] }); fetchRequests(); showToast('Request submitted!', 'success'); }
     } catch (e) { showToast('Failed to submit.', 'error'); }
   };
@@ -203,7 +204,7 @@ export default function ProjectDetails() {
     reader.onloadend = async () => {
       try {
         const body = { filename: file.name, base64_data: reader.result };
-        const r = await fetch('http://localhost:8000/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const r = await fetch(API_BASE_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (r.ok) {
           const { url } = await r.json();
           setNewRequest(prev => ({ ...prev, attachments: [...prev.attachments, url] }));
@@ -244,7 +245,7 @@ export default function ProjectDetails() {
       if (updateData.tags !== undefined) body.tags = updateData.tags;
       if (updateData.priority) body.priority = updateData.priority;
 
-      const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (r.ok) { const u = await r.json(); setSelectedRequest(u); populateUpdateData(u); fetchRequests(); showToast('Updated!', 'success'); }
     } catch (e) { showToast('Failed.', 'error'); }
   };
@@ -252,7 +253,7 @@ export default function ProjectDetails() {
   const handlePostComment = async () => {
     if (!newComment.trim()) return;
     try {
-      const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newComment }) });
+      const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author_role: role, text: newComment }) });
       if (r.ok) { const c = await r.json(); setSelectedRequest({ ...selectedRequest, comments: [...(selectedRequest.comments || []), c] }); setNewComment(''); fetchRequests(); showToast('Reply posted!', 'success'); }
     } catch (e) { showToast('Failed.', 'error'); }
   };
@@ -264,7 +265,7 @@ export default function ProjectDetails() {
     reader.onloadend = async () => {
       try {
         const body = { filename: file.name, base64_data: reader.result };
-        const r = await fetch('http://localhost:8000/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const r = await fetch(API_BASE_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (r.ok) {
           const { url } = await r.json();
           const markdownLink = file.type.startsWith('image/') ? `\n![${file.name}](${url})\n` : `\n[📄 ${file.name}](${url})\n`;
@@ -279,7 +280,7 @@ export default function ProjectDetails() {
 
   const handleCloseRequest = async () => {
     try {
-      const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Completed' }) });
+      const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'Completed' }) });
       if (r.ok) { const u = await r.json(); setSelectedRequest(u); populateUpdateData(u); fetchRequests(); setResolveConfirm(false); showToast('Resolved!', 'success'); }
     } catch (e) { showToast('Failed.', 'error'); }
   };
@@ -288,7 +289,7 @@ export default function ProjectDetails() {
     if (!reqId) return;
     try {
       const body = { [field]: value };
-      const r = await fetch(`http://localhost:8000/api/requests/${reqId}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const r = await fetch(`${API_BASE_URL}/api/requests/${reqId}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (r.ok) { 
         const u = await r.json(); 
         if (selectedRequest && selectedRequest.id === reqId) { setSelectedRequest(u); populateUpdateData(u); }
@@ -305,7 +306,7 @@ export default function ProjectDetails() {
     }
     try {
       const body = { subtasks: newSubtasks, progress_percent };
-      const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (r.ok) { 
         const u = await r.json(); 
         setSelectedRequest(u); populateUpdateData(u);
@@ -337,7 +338,7 @@ export default function ProjectDetails() {
       if (!suggestedDays) return showToast('Please enter suggested days', 'error');
       try {
         const body = { estimated_days_client: parseInt(suggestedDays), client_approved_estimate: false };
-        const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, {
+        const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, {
           method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
         });
         if (r.ok) {
@@ -352,7 +353,7 @@ export default function ProjectDetails() {
       if (!suggestedComplexity) return showToast('Please enter suggested complexity', 'error');
       try {
         const body = { complexity_client: suggestedComplexity, client_approved_estimate: false };
-        const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, {
+        const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, {
           method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
         });
         if (r.ok) {
@@ -371,10 +372,10 @@ export default function ProjectDetails() {
       if (!suggestedDays) return showToast('Please enter suggested days', 'error');
       try {
         const body = { agreed_days: parseInt(suggestedDays), client_approved_estimate: true };
-        const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, {
+        const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, {
           method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
         });
-        await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}/comments`, {
+        await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}/comments`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ author_role: role, text: `@Developer The client has forcefully overridden the timeline to ${suggestedDays} days.` })
         });
@@ -390,10 +391,10 @@ export default function ProjectDetails() {
       if (!suggestedComplexity) return showToast('Please enter suggested complexity', 'error');
       try {
         const body = { agreed_complexity: suggestedComplexity, client_approved_estimate: true };
-        const r = await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}?role=${role}`, {
+        const r = await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}?role=${role}`, {
           method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
         });
-        await fetch(`http://localhost:8000/api/requests/${selectedRequest.id}/comments`, {
+        await fetch(`${API_BASE_URL}/api/requests/${selectedRequest.id}/comments`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ author_role: role, text: `@Developer The client has forcefully overridden the complexity to ${suggestedComplexity}.` })
         });

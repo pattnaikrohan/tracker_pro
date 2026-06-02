@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, FolderOpen, Target, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from './config';
 
 export default function GlobalSearch() {
   const [query, setQuery] = useState('');
@@ -28,7 +29,7 @@ export default function GlobalSearch() {
 
     const search = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/projects?include_archived=true');
+        const res = await fetch(API_BASE_URL + '/api/projects?include_archived=true');
         if (!res.ok) return;
         const projects = await res.json();
         

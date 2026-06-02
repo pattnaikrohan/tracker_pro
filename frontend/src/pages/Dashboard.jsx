@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, FolderOpen, Calendar, ArrowRight, Trash2, Layers, AlertTriangle, CheckCircle2, Clock, X, Search, MessageSquare, Target, Flame, ShieldAlert, Zap, TrendingUp, Paperclip } from 'lucide-react';
 import { RoleContext, ToastContext, SyncContext } from '../App';
+import { API_BASE_URL } from '../config';
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
@@ -18,7 +19,7 @@ export default function Dashboard() {
     reader.onloadend = async () => {
       try {
         const body = { filename: file.name, base64_data: reader.result };
-        const r = await fetch('http://localhost:8000/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const r = await fetch(API_BASE_URL + '/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (r.ok) {
           const { url } = await r.json();
           setNewProject(prev => ({ ...prev, attachments: [...(prev.attachments || []), url] }));
@@ -43,21 +44,21 @@ export default function Dashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/users');
+      const res = await fetch(API_BASE_URL + '/api/users');
       if (res.ok) setUsers(await res.json());
     } catch (e) { console.error(e); }
   };
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/projects');
+      const res = await fetch(API_BASE_URL + '/api/projects');
       if (res.ok) setProjects(await res.json());
     } catch (e) { console.error(e); }
   };
 
   const fetchActivity = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/activity?limit=15');
+      const res = await fetch(API_BASE_URL + '/api/activity?limit=15');
       if (res.ok) setActivities(await res.json());
     } catch (e) { console.error(e); }
   };
@@ -68,7 +69,7 @@ export default function Dashboard() {
       const payload = { ...newProject };
       if (role === 'AAW') payload.client = user.username;
       
-      const res = await fetch('http://localhost:8000/api/projects', {
+      const res = await fetch(API_BASE_URL + '/api/projects', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -84,7 +85,7 @@ export default function Dashboard() {
 
   const handleDeleteProject = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/projects/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/projects/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setProjects(projects.filter(p => p.id !== id));
         setDeleteConfirm(null);

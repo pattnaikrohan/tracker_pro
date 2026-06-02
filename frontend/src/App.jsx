@@ -6,6 +6,7 @@ import ProjectDetails from './pages/ProjectDetails';
 import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 import GlobalSearch from './GlobalSearch';
+import { API_BASE_URL } from './config';
 
 // Role context so sub-pages know who is logged in
 export const RoleContext = createContext();
@@ -125,7 +126,7 @@ function NotificationBell() {
   const fetchNotifs = async () => {
     if (!role) return;
     try {
-      const r = await fetch(`http://localhost:8000/api/notifications?role=${role}`);
+      const r = await fetch(`${API_BASE_URL}/api/notifications?role=${role}`);
       if (r.ok) {
         const newNotifs = await r.json();
         if (knownIdsRef.current.size > 0) {

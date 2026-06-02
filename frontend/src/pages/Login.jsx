@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, Activity, ArrowRight, Shield, MessageSquare, BarChart2 } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const DEMO_ACCOUNTS = [
   { username: 'steve@aaw.com', password: 'Steve@123', label: 'Steve (Client)', role: 'AAW', desc: 'Submit requests & track projects', color: 'linear-gradient(135deg, #4F46E5, #7C3AED)', icon: <Shield size={20} /> },
@@ -23,7 +24,7 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
+      const response = await fetch(API_BASE_URL + '/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
