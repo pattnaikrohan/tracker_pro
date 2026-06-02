@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 import os
@@ -179,7 +179,7 @@ def get_users():
 
 # ═══ UPLOADS ═══
 @app.post("/api/upload")
-def upload_file(req: schemas.UploadRequest):
+def upload_file(req: schemas.UploadRequest, request: Request):
     try:
         header, encoded = req.base64_data.split(",", 1)
         file_ext = req.filename.split(".")[-1]
@@ -187,7 +187,8 @@ def upload_file(req: schemas.UploadRequest):
         path = os.path.join(UPLOAD_DIR, unique_name)
         with open(path, "wb") as f:
             f.write(base64.b64decode(encoded))
-        return {"url": f"http://localhost:8000/uploads/{unique_name}"}
+        base_url = str(request.base_url).rstrip("/")
+        return {"url": f"{base_url}/uploads/{unique_name}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
