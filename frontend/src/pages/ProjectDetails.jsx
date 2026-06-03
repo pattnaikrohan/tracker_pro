@@ -1511,15 +1511,15 @@ export default function ProjectDetails() {
 
       {/* Edit Project Modal */}
       {isEditProjectModalOpen && (
-        <div className="modal-backdrop" onClick={() => setIsEditProjectModalOpen(false)}>
+        <div className="modal-overlay" onClick={() => setIsEditProjectModalOpen(false)}>
           <div className="modal-content glass-panel" style={{ maxWidth: '700px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Edit Project Details</h2>
+            <div className="modal-header-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0 }}>Edit Project Details</h2>
               <button className="icon-btn" onClick={() => setIsEditProjectModalOpen(false)}><X size={20} /></button>
             </div>
-            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="modal-body-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
-                <label>Manual RAG Status (Overrides automatic calculation)</label>
+                <label className="form-label">Manual RAG Status (Overrides automatic calculation)</label>
                 <select className="form-control" value={editProjectData.manual_health} onChange={(e) => setEditProjectData({ ...editProjectData, manual_health: e.target.value })}>
                   <option value="Auto">Auto (Dynamic Calculation)</option>
                   <option value="Green">Green (On Track)</option>
@@ -1529,9 +1529,9 @@ export default function ProjectDetails() {
                 </select>
               </div>
               <div className="form-group">
-                <label>Detailed Description</label>
+                <label className="form-label">Detailed Description</label>
                 <textarea 
-                  className="form-control" 
+                  className="form-control outlook-style" 
                   rows="12"
                   value={editProjectData.description} 
                   onChange={(e) => setEditProjectData({ ...editProjectData, description: e.target.value })}
@@ -1539,7 +1539,7 @@ export default function ProjectDetails() {
                 />
               </div>
             </div>
-            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+            <div className="modal-footer-content" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
               <button className="btn btn-secondary" onClick={() => setIsEditProjectModalOpen(false)}>Cancel</button>
               <button className="btn btn-primary" onClick={async () => {
                 await handleUpdateProject({
