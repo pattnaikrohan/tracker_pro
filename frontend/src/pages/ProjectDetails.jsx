@@ -931,8 +931,17 @@ export default function ProjectDetails() {
                   <div className="form-group" style={{ flex: 1 }}><label className="form-label">Complexity</label><select className="form-control" value={newRequest.complexity_client} onChange={e => setNewRequest({ ...newRequest, complexity_client: e.target.value })}><option>Low</option><option>Medium</option><option>High</option></select></div>
                 </div>
                 <div className="flex gap-4">
+                  <div className="form-group" style={{ flex: 1 }}><label className="form-label"><span className="flex items-center gap-2"><Clock size={14} /> Your Estimate (days)</span></label><input type="number" className="form-control" min="1" max="365" placeholder="e.g. 5" value={newRequest.estimated_days_client} onChange={e => {
+                    const days = e.target.value;
+                    let d = newRequest.deadline;
+                    if (days && !isNaN(days)) {
+                      const date = new Date();
+                      date.setDate(date.getDate() + parseInt(days, 10));
+                      d = date.toISOString().split('T')[0];
+                    }
+                    setNewRequest({ ...newRequest, estimated_days_client: days, deadline: d });
+                  }} /></div>
                   <div className="form-group" style={{ flex: 1 }}><label className="form-label"><span className="flex items-center gap-2"><Calendar size={14} /> Deadline</span></label><input type="date" className="form-control" value={newRequest.deadline} onChange={e => setNewRequest({ ...newRequest, deadline: e.target.value })} /></div>
-                  <div className="form-group" style={{ flex: 1 }}><label className="form-label"><span className="flex items-center gap-2"><Clock size={14} /> Your Estimate (days)</span></label><input type="number" className="form-control" min="1" max="365" placeholder="e.g. 5" value={newRequest.estimated_days_client} onChange={e => setNewRequest({ ...newRequest, estimated_days_client: e.target.value })} /></div>
                 </div>
                 <div className="form-group mb-0">
                   <label className="form-label"><span className="flex items-center gap-2"><Paperclip size={14} /> Attachments (Optional)</span></label>
