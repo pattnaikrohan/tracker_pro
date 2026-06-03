@@ -1462,11 +1462,16 @@ export default function ProjectDetails() {
                     )}
                   </div>
                   <div style={{ position: 'relative', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', overflow: 'hidden' }}>
-                    <textarea placeholder="Write a reply (Markdown supported)..." value={newBlockerComment} onChange={e => setNewBlockerComment(e.target.value)} style={{ width: '100%', minHeight: '100px', background: 'transparent', border: 'none', padding: '14px 16px 46px', fontSize: '0.85rem', lineHeight: 1.6, outline: 'none', resize: 'none', fontFamily: 'inherit', color: 'var(--text-main)' }} />
+                    <textarea placeholder="Write a reply (Markdown supported)..." value={newBlockerComment} onChange={e => setNewBlockerComment(e.target.value)} onKeyDown={() => { if(sendTyping && activeBlocker) sendTyping(activeBlocker.id); }} style={{ width: '100%', minHeight: '100px', background: 'transparent', border: 'none', padding: '14px 16px 46px', fontSize: '0.85rem', lineHeight: 1.6, outline: 'none', resize: 'none', fontFamily: 'inherit', color: 'var(--text-main)' }} />
                     <div style={{ position: 'absolute', bottom: '8px', right: '10px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <button className="btn btn-primary" onClick={handlePostBlockerComment} disabled={!newBlockerComment.trim()} style={{ padding: '6px 14px', fontSize: '0.8rem' }}><Send size={12} /> Send</button>
                     </div>
                   </div>
+                  {typingUsers && typingUsers[activeBlocker.id] && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px', fontStyle: 'italic', animation: 'fadeIn 0.3s ease-in-out' }}>
+                      {typingUsers[activeBlocker.id]} is typing...
+                    </div>
+                  )}
                 </div>
               )}
             </div>
