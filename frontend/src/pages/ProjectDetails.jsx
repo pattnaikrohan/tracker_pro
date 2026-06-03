@@ -1526,6 +1526,7 @@ export default function ProjectDetails() {
                   <option value="Amber">Amber (Warning)</option>
                   <option value="Red">Red (Critical/Blocked)</option>
                   <option value="Paused">Paused</option>
+                  <option value="Completed">Completed</option>
                 </select>
               </div>
               <div className="form-group">
