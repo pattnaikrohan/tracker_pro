@@ -60,15 +60,22 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data", "projects")
-os.makedirs(DATA_DIR, exist_ok=True)
+IS_AZURE = os.environ.get('WEBSITE_SITE_NAME') is not None
+if IS_AZURE:
+    DATA_DIR = "/home/data/projects"
+    UPLOAD_DIR = "/home/data/uploads"
+    AUDIT_LOG_PATH = "/home/data/audit_logs.json"
+else:
+    DATA_DIR = os.path.join(os.path.dirname(__file__), "data", "projects")
+    UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "data", "uploads")
+    AUDIT_LOG_PATH = os.path.join(os.path.dirname(__file__), "data", "audit_logs.json")
 
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "data", "uploads")
+os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 def append_audit_log(event_type: str, data: dict):
-    path = os.path.join(os.path.dirname(__file__), "data", "audit_logs.json")
+    path = AUDIT_LOG_PATH
     if not os.path.exists(path):
         with open(path, "w", encoding="utf-8") as f:
             json.dump([], f)
