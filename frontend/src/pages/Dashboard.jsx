@@ -347,22 +347,38 @@ export default function Dashboard() {
                   }
                 }
               }
+              
+              if (project.manual_health && project.manual_health !== 'Auto') {
+                if (project.manual_health === 'Green') {
+                  calendarHealth = 'Green'; healthColor = '#059669'; healthBg = 'var(--status-success-bg)'; healthText = 'On Track (Manual)';
+                } else if (project.manual_health === 'Amber') {
+                  calendarHealth = 'Amber'; healthColor = '#D97706'; healthBg = 'var(--status-warning-bg)'; healthText = 'Warning (Manual)';
+                } else if (project.manual_health === 'Red') {
+                  calendarHealth = 'Red'; healthColor = '#DC2626'; healthBg = 'var(--status-danger-bg)'; healthText = 'Critical (Manual)';
+                } else if (project.manual_health === 'Paused') {
+                  calendarHealth = 'Paused'; healthColor = '#6B7280'; healthBg = '#F3F4F6'; healthText = 'Paused';
+                }
+              }
 
               return (
                 <div key={project.id} className="glass-card stagger-card" onClick={() => navigate(`/projects/${project.id}`)} style={{ 
                   borderTop: `4px solid ${healthColor}`, 
-                  borderLeft: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
-                  borderRight: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
-                  borderBottom: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
+                  borderLeft: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : calendarHealth === 'Paused' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
+                  borderRight: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : calendarHealth === 'Paused' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
+                  borderBottom: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : calendarHealth === 'Paused' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
                   background: calendarHealth === 'Red' 
                     ? 'linear-gradient(135deg, rgba(254, 242, 242, 0.7) 0%, var(--bg-secondary) 100%)' 
                     : calendarHealth === 'Amber' 
                     ? 'linear-gradient(135deg, rgba(255, 251, 235, 0.7) 0%, var(--bg-secondary) 100%)' 
+                    : calendarHealth === 'Paused'
+                    ? 'linear-gradient(135deg, rgba(243, 244, 246, 0.7) 0%, var(--bg-secondary) 100%)'
                     : 'linear-gradient(135deg, rgba(240, 253, 250, 0.7) 0%, var(--bg-secondary) 100%)',
                   boxShadow: calendarHealth === 'Red' 
                     ? '0 8px 30px rgba(220, 38, 38, 0.05)' 
                     : calendarHealth === 'Amber' 
                     ? '0 8px 30px rgba(217, 119, 6, 0.03)' 
+                    : calendarHealth === 'Paused'
+                    ? '0 8px 30px rgba(107, 114, 128, 0.03)'
                     : '0 8px 30px rgba(5, 150, 105, 0.03)',
                   padding: '24px' 
                 }}>

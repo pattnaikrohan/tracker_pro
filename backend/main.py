@@ -291,6 +291,7 @@ def create_project(project: schemas.ProjectCreate):
     new_project = {
         "id": project_id, "title": project.title, "description": project.description,
         "client": project.client, "developers": project.developers or [], "status": project.status or "Active",
+        "manual_health": project.manual_health,
         "complexity_client": project.complexity_client, "complexity_dev": None, "agreed_complexity": None,
         "estimated_days_client": project.estimated_days_client, "estimated_days_dev": None,
         "agreed_days": None, "client_approved_estimate": None,

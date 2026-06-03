@@ -61,6 +61,9 @@ export default function ProjectDetails() {
   const [newBlockerComment, setNewBlockerComment] = useState('');
   const [activeBlockerTab, setActiveBlockerTab] = useState('details');
 
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+  const [editProjectData, setEditProjectData] = useState({ description: '', manual_health: 'Auto' });
+
   const { syncKey, typingUsers, sendTyping } = useContext(SyncContext);
   const location = useLocation();
 
@@ -596,7 +599,16 @@ export default function ProjectDetails() {
         <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(79,70,229,0.1) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%' }}></div>
         <div className="flex justify-between items-start mb-4" style={{ position: 'relative', zIndex: 1, flexWrap: 'wrap', gap: '12px' }}>
           <h1 style={{ fontSize: '2.4rem', margin: 0, letterSpacing: '-0.04em', color: 'var(--text-main)', fontWeight: 800 }}>{project.title}</h1>
-          <div className="badge badge-active" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Active Project</div>
+          <div className="flex items-center gap-3">
+            <div className="badge badge-active" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Active Project</div>
+            <button className="btn btn-secondary" style={{ padding: '8px 16px' }} onClick={() => {
+              setEditProjectData({ description: project.description || '', manual_health: project.manual_health || 'Auto' });
+              setIsEditProjectModalOpen(true);
+            }}>
+              <FileText size={16} style={{ marginRight: '6px' }} />
+              Edit Project
+            </button>
+          </div>
         </div>
         <div style={{ position: 'relative', zIndex: 1, fontSize: '1.05rem', lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: '32px', maxWidth: '800px', whiteSpace: 'pre-wrap' }}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{project.description}</ReactMarkdown>
@@ -1492,6 +1504,51 @@ export default function ProjectDetails() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {isEditProjectModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsEditProjectModalOpen(false)}>
+          <div className="modal-content glass-panel" style={{ maxWidth: '700px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Edit Project Details</h2>
+              <button className="icon-btn" onClick={() => setIsEditProjectModalOpen(false)}><X size={20} /></button>
+            </div>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group">
+                <label>Manual RAG Status (Overrides automatic calculation)</label>
+                <select className="form-control" value={editProjectData.manual_health} onChange={(e) => setEditProjectData({ ...editProjectData, manual_health: e.target.value })}>
+                  <option value="Auto">Auto (Dynamic Calculation)</option>
+                  <option value="Green">Green (On Track)</option>
+                  <option value="Amber">Amber (Warning)</option>
+                  <option value="Red">Red (Critical/Blocked)</option>
+                  <option value="Paused">Paused</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Detailed Description</label>
+                <textarea 
+                  className="form-control" 
+                  rows="12"
+                  value={editProjectData.description} 
+                  onChange={(e) => setEditProjectData({ ...editProjectData, description: e.target.value })}
+                  placeholder="Enter detailed project description (Markdown supported)..."
+                />
+              </div>
+            </div>
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+              <button className="btn btn-secondary" onClick={() => setIsEditProjectModalOpen(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={async () => {
+                await handleUpdateProject({
+                  description: editProjectData.description,
+                  manual_health: editProjectData.manual_health === 'Auto' ? null : editProjectData.manual_health
+                });
+                setIsEditProjectModalOpen(false);
+                showToast("Project details updated successfully");
+              }}>Save Changes</button>
             </div>
           </div>
         </div>

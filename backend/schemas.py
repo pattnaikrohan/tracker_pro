@@ -144,6 +144,7 @@ class ProjectBase(BaseModel):
     client: Optional[str] = None
     developers: Optional[List[str]] = []
     status: Optional[str] = "Active"
+    manual_health: Optional[str] = None
 
 class ProjectCreate(ProjectBase):
     estimated_days_client: Optional[int] = None
@@ -165,6 +166,7 @@ class ProjectUpdate(BaseModel):
     deadline: Optional[str] = None
     client_approved_estimate: Optional[bool] = None
     status: Optional[str] = None
+    manual_health: Optional[str] = None
 
 class Project(ProjectBase):
     id: int
