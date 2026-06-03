@@ -704,13 +704,13 @@ def get_activity_feed(limit: int = 20):
                 "request_title": req["title"], "request_id": req["id"],
                 "timestamp": req["created_at"], "detail": f"New {req['type']}: {req['title']}"
             })
-            for c in req.get("comments", []):
-                activities.append({
-                    "type": "comment", "project": proj["title"], "project_id": proj["id"],
-                    "request_title": req["title"], "request_id": req["id"],
-                    "author": c["author_role"], "timestamp": c["created_at"],
-                    "detail": c["text"][:120] + ("..." if len(c["text"]) > 120 else "")
-                })
+        # Project creation activity
+        if proj.get("created_at"):
+            activities.append({
+                "type": "project_created", "project": proj["title"], "project_id": proj["id"],
+                "request_title": "Project Created", "request_id": None,
+                "timestamp": proj["created_at"], "detail": f"New Project: {proj['title']}"
+            })
             if req.get("completed_at"):
                 activities.append({
                     "type": "completed", "project": proj["title"], "project_id": proj["id"],

@@ -237,17 +237,19 @@ export default function Dashboard() {
     }
   };
 
-  const getActivityIcon = (type) => {
-
-    if (type === 'comment') return <MessageSquare size={14} />;
-    if (type === 'completed') return <CheckCircle2 size={14} />;
-    return <Zap size={14} />;
-  };
-
-  const getActivityColor = (type) => {
-    if (type === 'comment') return 'var(--status-info)';
-    if (type === 'completed') return 'var(--status-success)';
-    return 'var(--accent-primary)';
+  const getActivityStyles = (type) => {
+    switch (type) {
+      case 'project_created':
+        return { icon: <FolderOpen size={14} />, color: '#6366F1', bg: 'rgba(99, 102, 241, 0.15)', border: 'rgba(99, 102, 241, 0.3)' };
+      case 'request_created':
+        return { icon: <Plus size={14} />, color: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.3)' };
+      case 'completed':
+        return { icon: <CheckCircle2 size={14} />, color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.3)' };
+      case 'blocker':
+        return { icon: <ShieldAlert size={14} />, color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.3)' };
+      default:
+        return { icon: <Zap size={14} />, color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.3)' };
+    }
   };
 
   const roleGreeting = role === 'AAW' ? 'Welcome back! Here\'s your project overview.' :
@@ -541,39 +543,50 @@ export default function Dashboard() {
             {activities.length === 0 ? (
               <div className="text-center text-muted" style={{ padding: '32px 0', fontSize: '0.88rem' }}>No recent activity</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                {activities.slice(0, 12).map((act, i) => (
-                  <div key={i} style={{
-                    display: 'flex', gap: '12px', padding: '10px 0',
-                    borderBottom: i < activities.length - 1 && i < 11 ? '1px solid var(--border-subtle)' : 'none',
-                  }}>
-                    <div style={{
-                      width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: act.type === 'completed' ? 'var(--status-success-bg)' : act.type === 'comment' ? 'var(--status-info-bg)' : 'var(--accent-primary-light)',
-                      color: getActivityColor(act.type),
-                    }}>
-                      {getActivityIcon(act.type)}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-main)', lineHeight: 1.4 }}>
-                        {act.type === 'comment' && <span style={{ fontWeight: 700, color: getActivityColor(act.type) }}>{act.author}</span>}
-                        {act.type === 'comment' ? ' commented on ' : act.type === 'completed' ? '✓ ' : '⚡ '}
-                        <span style={{ fontWeight: 600 }}>{act.request_title}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', paddingLeft: '8px', marginTop: '8px' }}>
+                <div style={{ position: 'absolute', left: '22px', top: '10px', bottom: '10px', width: '2px', background: 'linear-gradient(to bottom, var(--border-subtle), transparent)' }} />
+                {activities.slice(0, 15).map((act, i) => {
+                  const style = getActivityStyles(act.type);
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: '16px', position: 'relative' }}>
+                      <div style={{
+                        width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: style.bg, color: style.color,
+                        border: `1px solid ${style.border}`,
+                        boxShadow: `0 0 10px ${style.bg}`,
+                        zIndex: 2,
+                        marginTop: '6px'
+                      }}>
+                        {style.icon}
                       </div>
-                      {act.type === 'comment' && (
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          "{act.detail}"
+                      <div className="glass-card" style={{ flex: 1, minWidth: 0, padding: '14px 18px', borderRadius: 'var(--radius-md)', background: 'var(--bg-main)', border: '1px solid var(--border-subtle)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.4, marginBottom: '6px' }}>
+                          {act.type === 'project_created' ? 'New Project: ' : 
+                           act.type === 'request_created' ? 'Created: ' : 
+                           act.type === 'completed' ? 'Completed: ' : 
+                           act.type === 'blocker' ? 'Blocker Reported: ' : ''}
+                          <span style={{ color: style.color }}>{act.request_title}</span>
                         </div>
-                      )}
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)', marginTop: '3px' }}>
-                        {act.project} · {new Date(act.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                          {act.detail && act.type !== 'project_created' && act.type !== 'completed' && act.type !== 'blocker' && act.type !== 'request_created' ? act.detail : 
+                           act.type === 'blocker' ? `Reported by ${act.author || 'Dev'}` : 
+                           act.type === 'project_created' ? `Project initialized` : 
+                           act.type === 'request_created' ? `Change request added` : 
+                           `Marked as completed`}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '12px', background: 'var(--bg-subtle)', fontWeight: 600, color: 'var(--text-muted)' }}>{act.project}</span>
+                          <span>•</span>
+                          <span>{new Date(act.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
+
           </div>
         </div>
       </div>
