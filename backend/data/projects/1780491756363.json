@@ -1,0 +1,23 @@
+{
+    "id": 1780491756363,
+    "title": "Wisetech API update note monitoring",
+    "description": "**Phase:** Paused\n\n**Planned Window:** nan\n\n**Current RAG:** Green\n\n**Next Milestone:** nan\n\n**Notes/Blockers:**\n- 15th\u00a0Apr: Research and Analysis in progress",
+    "client": "AAW",
+    "developers": [
+        "Cozentus"
+    ],
+    "status": "Active",
+    "complexity_client": null,
+    "complexity_dev": null,
+    "agreed_complexity": null,
+    "estimated_days_client": null,
+    "estimated_days_dev": null,
+    "agreed_days": null,
+    "client_approved_estimate": null,
+    "deadline": null,
+    "attachments": [],
+    "comments": [],
+    "created_at": "2026-06-03T13:02:36.363313",
+    "change_requests": [],
+    "blockers": []
+}

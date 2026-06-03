@@ -1,0 +1,23 @@
+{
+    "id": 1780491756286,
+    "title": "Conti Rate Calculator",
+    "description": "**Phase:** Completed\n\n**Planned Window:** nan\n\n**Current RAG:** Green\n\n**Next Milestone:** nan\n\n**Notes/Blockers:**\n- 21st\u00a0may: Fixed an API issue.15th\u00a0Apr: Deployed and got feedback for password reset which will be evaluate by AAW and implemented upon answers.\n- 28th Mar: Admin control added to calculator page.\n- 26 Mar: Added notification in Prod25 Mar: Deployed to Prod\n- 23rd Mar: Baselined the req",
+    "client": "AAW",
+    "developers": [
+        "AAW"
+    ],
+    "status": "Completed",
+    "complexity_client": null,
+    "complexity_dev": null,
+    "agreed_complexity": null,
+    "estimated_days_client": null,
+    "estimated_days_dev": null,
+    "agreed_days": null,
+    "client_approved_estimate": null,
+    "deadline": null,
+    "attachments": [],
+    "comments": [],
+    "created_at": "2026-06-03T13:02:36.286715",
+    "change_requests": [],
+    "blockers": []
+}

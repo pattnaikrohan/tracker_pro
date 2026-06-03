@@ -1,0 +1,23 @@
+{
+    "id": 1780491756253,
+    "title": "Automated Sales-to-Service Forms",
+    "description": "**Phase:** Completed\n\n**Planned Window:** 25 Mar 2026 \u2013 21 Apr 2026\n\n**Current RAG:** Green\n\n**Next Milestone:** Dataverse data model approval\n\n**Notes/Blockers:**\n- 15th\u00a0Apr: Completed into Prod with all feedback from AAW.\n- 31st Mar: Awaiting sales rep feedback.26th Mar: Fixes are applied and pushed to CW. Awaiting sales rep feedback if any.\n- 25th Mar: Received comments for AAW sales Rep.\n- 18th Mar: To be Demo on 18th Mar.\n- 11th March: Demo to be given on 12th March.\n- Licences to be confirmed; choose front-end (Form/SharePoint/Excel baseline).",
+    "client": "AAW",
+    "developers": [
+        "Cozentus"
+    ],
+    "status": "Completed",
+    "complexity_client": null,
+    "complexity_dev": null,
+    "agreed_complexity": null,
+    "estimated_days_client": null,
+    "estimated_days_dev": null,
+    "agreed_days": null,
+    "client_approved_estimate": null,
+    "deadline": null,
+    "attachments": [],
+    "comments": [],
+    "created_at": "2026-06-03T13:02:36.253731",
+    "change_requests": [],
+    "blockers": []
+}
