@@ -260,7 +260,9 @@ def create_project(project: schemas.ProjectCreate):
     now = datetime.utcnow()
     deadline = project.deadline
     if not deadline and project.estimated_days_client:
-        deadline = (now + timedelta(days=project.estimated_days_client)).isoformat()
+        try:
+            deadline = (now + timedelta(days=float(project.estimated_days_client))).isoformat()
+        except (ValueError, TypeError): pass
         
     new_project = {
         "id": project_id, "title": project.title, "description": project.description,
@@ -289,9 +291,11 @@ async def update_project(project_id: int, project_update: schemas.ProjectUpdate,
     elif "estimated_days_client" in update_data and update_data["estimated_days_client"] is not None and not project.get("agreed_days") and not update_data.get("agreed_days"):
         try:
             created_at_dt = datetime.fromisoformat(project["created_at"].replace('Z', ''))
-            update_data["deadline"] = (created_at_dt + timedelta(days=update_data["estimated_days_client"])).isoformat()
+            update_data["deadline"] = (created_at_dt + timedelta(days=float(update_data["estimated_days_client"]))).isoformat()
         except Exception:
-            update_data["deadline"] = (datetime.utcnow() + timedelta(days=update_data["estimated_days_client"])).isoformat()
+            try:
+                update_data["deadline"] = (datetime.utcnow() + timedelta(days=float(update_data["estimated_days_client"]))).isoformat()
+            except (ValueError, TypeError): pass
 
     if "estimated_days_dev" in update_data or "estimated_days_client" in update_data:
         pass # Client explicit approval required
@@ -378,7 +382,9 @@ async def create_project_request(project_id: int, request: schemas.ChangeRequest
     now = datetime.utcnow()
     deadline = request.deadline
     if not deadline and request.estimated_days_client:
-        deadline = (now + timedelta(days=request.estimated_days_client)).isoformat()
+        try:
+            deadline = (now + timedelta(days=float(request.estimated_days_client))).isoformat()
+        except (ValueError, TypeError): pass
         
     new_request = {
         "id": request_id, "project_id": project_id,
@@ -410,7 +416,9 @@ async def update_request(request_id: int, request_update: schemas.ChangeRequestU
     update_data = request_update.dict(exclude_unset=True)
 
     if "agreed_days" in update_data and update_data["agreed_days"] is not None:
-        update_data["deadline"] = (datetime.utcnow() + timedelta(days=update_data["agreed_days"])).isoformat()
+        try:
+            update_data["deadline"] = (datetime.utcnow() + timedelta(days=float(update_data["agreed_days"]))).isoformat()
+        except (ValueError, TypeError): pass
     else:
         est_days = None
         if "estimated_days_client" in update_data and update_data["estimated_days_client"] is not None:
@@ -421,15 +429,17 @@ async def update_request(request_id: int, request_update: schemas.ChangeRequestU
         if est_days is not None and not found_request.get("agreed_days") and not update_data.get("agreed_days"):
             try:
                 created_at_dt = datetime.fromisoformat(found_request["created_at"].replace('Z', ''))
-                update_data["deadline"] = (created_at_dt + timedelta(days=est_days)).isoformat()
+                update_data["deadline"] = (created_at_dt + timedelta(days=float(est_days))).isoformat()
             except Exception:
-                update_data["deadline"] = (datetime.utcnow() + timedelta(days=est_days)).isoformat()
+                try:
+                    update_data["deadline"] = (datetime.utcnow() + timedelta(days=float(est_days))).isoformat()
+                except (ValueError, TypeError): pass
 
     if "status" in update_data and update_data["status"] != found_request.get("status"):
         new_status = update_data["status"]
         if new_status == "Completed":
             found_request["completed_at"] = datetime.utcnow().isoformat()
-            if found_request.get("progress_percent", 0) < 100:
+            if (found_request.get("progress_percent") or 0) < 100:
                 found_request["progress_percent"] = 100
         else:
             found_request["completed_at"] = None
@@ -727,8 +737,8 @@ def get_analytics_metrics():
     for proj in projects:
         reqs = proj.get("change_requests", [])
         active_reqs = [r for r in reqs if r.get("status") != "Completed"]
-        avg_progress = round(sum(r.get("progress_percent", 0) for r in active_reqs) / len(active_reqs)) if active_reqs else 0
-        total_hours = sum(r.get("hours_spent", 0) or 0 for r in reqs)
+        avg_progress = round(sum((r.get("progress_percent") or 0) for r in active_reqs) / len(active_reqs)) if active_reqs else 0
+        total_hours = sum((r.get("hours_spent") or 0) for r in reqs)
         active_blockers = len([b for b in proj.get("blockers", []) if b.get("status") == "Active"])
         health = calculate_health_status(proj.get("created_at"), proj.get("deadline"))
         project_health_counts[health] = project_health_counts.get(health, 0) + 1
@@ -749,17 +759,21 @@ def get_analytics_metrics():
     for r in all_requests:
         c_est, d_est = r.get("estimated_days_client"), r.get("estimated_days_dev")
         if c_est is not None and d_est is not None:
-            estimation_data.append({
-                "title": r.get("title", ""), "client": c_est, "dev": d_est,
-                "agreed": r.get("agreed_days"), "variance": abs(c_est - d_est)
-            })
+            try:
+                variance = abs(int(c_est) - int(d_est))
+                estimation_data.append({
+                    "title": r.get("title", ""), "client": int(c_est), "dev": int(d_est),
+                    "agreed": r.get("agreed_days"), "variance": variance
+                })
+            except (ValueError, TypeError):
+                pass
     avg_variance = round(sum(e["variance"] for e in estimation_data) / len(estimation_data), 1) if estimation_data else 0
 
     now_str = datetime.utcnow().isoformat()[:10]
     overdue = len([r for r in all_requests if r.get("deadline") and r.get("status") != "Completed" and r["deadline"] < now_str])
     blocked = len([r for r in all_requests if r.get("is_blocked")])
     escalated = len([r for r in all_requests if r.get("escalated")])
-    total_hours = sum(r.get("hours_spent", 0) or 0 for r in all_requests)
+    total_hours = sum((r.get("hours_spent") or 0) for r in all_requests)
 
     # Blocker stats
     all_blockers = []
@@ -769,7 +783,7 @@ def get_analytics_metrics():
     resolved_blockers = len([b for b in all_blockers if b.get("status") == "Resolved"])
 
     active = [r for r in all_requests if r.get("status") != "Completed"]
-    avg_active_progress = round(sum(r.get("progress_percent", 0) for r in active) / len(active)) if active else 0
+    avg_active_progress = round(sum((r.get("progress_percent") or 0) for r in active) / len(active)) if active else 0
     total_comments = sum(len(r.get("comments", [])) for r in all_requests)
     avg_comments = round(total_comments / total, 1) if total > 0 else 0
     with_estimates = len([r for r in all_requests if r.get("estimated_days_client") or r.get("estimated_days_dev")])
@@ -781,8 +795,8 @@ def get_analytics_metrics():
         if assignee and r.get("status") != "Completed":
             assignee_workload.setdefault(assignee, {"name": assignee, "count": 0, "hours": 0, "est_days": 0})
             assignee_workload[assignee]["count"] += 1
-            assignee_workload[assignee]["hours"] += r.get("hours_spent", 0) or 0
-            assignee_workload[assignee]["est_days"] += r.get("estimated_days_dev", 0) or 0
+            assignee_workload[assignee]["hours"] += (r.get("hours_spent") or 0)
+            assignee_workload[assignee]["est_days"] += (r.get("estimated_days_dev") or 0)
 
     daily_logs = {}
     for r in all_requests:
