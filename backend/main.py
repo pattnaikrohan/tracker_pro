@@ -163,6 +163,8 @@ def load_all_projects():
                     projects.append(json.load(f))
             except Exception:
                 continue
+    # Sort projects by dashboard_order ascending (fallback to 0), then by created_at descending
+    projects.sort(key=lambda x: (x.get("dashboard_order", 0), -datetime.fromisoformat(x["created_at"].replace('Z', '')).timestamp() if "created_at" in x and x["created_at"] else 0))
     return projects
 
 def find_request_in_all_projects(request_id: int):
@@ -271,12 +273,21 @@ def get_notifications(role: Optional[str] = None):
 
 # ═══ PROJECTS CRUD ═══
 @app.get("/api/projects", response_model=List[schemas.Project])
-def read_projects(include_archived: bool = False):
+async def get_projects(include_archived: bool = False):
     projects = load_all_projects()
     if not include_archived:
         projects = [p for p in projects if p.get("status") != "Archived"]
-    projects.sort(key=lambda x: x.get('created_at', ''), reverse=True)
     return projects
+
+@app.put("/api/projects/reorder")
+async def reorder_projects(reorders: List[schemas.ProjectReorder]):
+    for item in reorders:
+        data = read_project_data(item.id)
+        if data:
+            data["dashboard_order"] = item.dashboard_order
+            write_project_data(item.id, data)
+    await manager.broadcast({"type": "UPDATE"})
+    return {"message": "Reordered successfully"}
 
 @app.post("/api/projects", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate):
@@ -291,7 +302,7 @@ def create_project(project: schemas.ProjectCreate):
     new_project = {
         "id": project_id, "title": project.title, "description": project.description,
         "client": project.client, "developers": project.developers or [], "status": project.status or "Active",
-        "manual_health": project.manual_health,
+        "manual_health": project.manual_health, "dashboard_order": project.dashboard_order or 0,
         "complexity_client": project.complexity_client, "complexity_dev": None, "agreed_complexity": None,
         "estimated_days_client": project.estimated_days_client, "estimated_days_dev": None,
         "agreed_days": None, "client_approved_estimate": None,

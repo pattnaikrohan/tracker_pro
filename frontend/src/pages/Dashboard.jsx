@@ -31,6 +31,8 @@ export default function Dashboard() {
     e.target.value = null;
   };
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [draggedProjectIndex, setDraggedProjectIndex] = useState(null);
   const navigate = useNavigate();
   const { role, user } = useContext(RoleContext);
   const { showToast } = useContext(ToastContext);
@@ -111,13 +113,132 @@ export default function Dashboard() {
   const awaitingEstimate = allRequests.filter(r => r.estimated_days_client && !r.estimated_days_dev && r.status !== 'Completed');
   const pendingAgreement = allRequests.filter(r => r.estimated_days_client && r.estimated_days_dev && !r.agreed_days && r.status !== 'Completed');
 
-  // Search filter
-  const filteredProjects = projects.filter(p =>
-    p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
+  const getProjectHealthData = (project) => {
+    const requests = project.change_requests || [];
+    const totalReqs = requests.length;
+    const completedReqs = requests.filter(r => r.status === 'Completed').length;
+    const progressPct = totalReqs > 0 ? (completedReqs / totalReqs) * 100 : 0;
+    const hasProjectBlockers = (project.blockers || []).some(b => b.status === 'Active');
+    const hasBlocked = requests.some(r => r.is_blocked && r.status !== 'Completed') || hasProjectBlockers;
+    const hasEscalated = requests.some(r => r.escalated && r.status !== 'Completed');
+
+    let healthColor = '#059669', healthText = 'On Track (Green)', healthBg = 'var(--status-success-bg)', calendarHealth = 'Green';
+    let daysRemaining = null;
+
+    if (project.deadline) {
+      const deadlineDate = new Date(project.deadline);
+      const now = new Date();
+      const diffTime = deadlineDate - now;
+      daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (daysRemaining <= 2) {
+        calendarHealth = 'Red';
+        healthColor = '#DC2626';
+        healthBg = 'var(--status-danger-bg)';
+        healthText = daysRemaining < 0 ? 'Overdue' : 'Critical (Red)';
+      } else if (daysRemaining <= 4) {
+        calendarHealth = 'Amber';
+        healthColor = '#D97706';
+        healthBg = 'var(--status-warning-bg)';
+        healthText = 'Warning (Amber)';
+      } else {
+        calendarHealth = 'Green';
+        healthColor = '#059669';
+        healthBg = 'var(--status-success-bg)';
+        healthText = 'On Track (Green)';
+      }
+    } else {
+      if (requests.length > 0 || hasProjectBlockers) {
+        const incomplete = requests.filter(r => r.status !== 'Completed');
+        if (incomplete.length > 0 || hasProjectBlockers) {
+          if (hasBlocked || hasEscalated) {
+            healthColor = '#DC2626'; healthText = hasBlocked ? 'Blocked' : 'Escalated'; healthBg = 'var(--status-danger-bg)';
+            calendarHealth = 'Red';
+          } else if (incomplete.some(r => r.priority === 'Critical')) {
+            healthColor = '#DC2626'; healthText = 'Critical'; healthBg = 'var(--status-danger-bg)';
+            calendarHealth = 'Red';
+          } else {
+            healthColor = '#D97706'; healthText = 'In Progress'; healthBg = 'var(--status-warning-bg)';
+            calendarHealth = 'Amber';
+          }
+        } else {
+          healthText = 'All Done';
+          healthBg = 'var(--status-success-bg)';
+          healthColor = '#059669';
+          calendarHealth = 'Green';
+        }
+      }
+    }
+    
+    if (project.manual_health && project.manual_health !== 'Auto') {
+      if (project.manual_health === 'Green') {
+        calendarHealth = 'Green'; healthColor = '#059669'; healthBg = 'var(--status-success-bg)'; healthText = 'On Track (Manual)';
+      } else if (project.manual_health === 'Amber') {
+        calendarHealth = 'Amber'; healthColor = '#D97706'; healthBg = 'var(--status-warning-bg)'; healthText = 'Warning (Manual)';
+      } else if (project.manual_health === 'Red') {
+        calendarHealth = 'Red'; healthColor = '#DC2626'; healthBg = 'var(--status-danger-bg)'; healthText = 'Critical (Manual)';
+      } else if (project.manual_health === 'Paused') {
+        calendarHealth = 'Paused'; healthColor = '#6B7280'; healthBg = '#F3F4F6'; healthText = 'Paused';
+      } else if (project.manual_health === 'Completed') {
+        calendarHealth = 'Completed'; healthColor = '#2563EB'; healthBg = '#EFF6FF'; healthText = 'Completed';
+      }
+    }
+
+    return { calendarHealth, healthColor, healthBg, healthText, requests, totalReqs, completedReqs, progressPct, daysRemaining };
+  };
+
+  // Search and status filter
+  const filteredProjects = projects.filter(p => {
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const healthData = getProjectHealthData(p);
+    p._healthDataCache = healthData;
+    const matchesStatus = statusFilter === 'All' || healthData.calendarHealth === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+
+
+  const isOrderingEnabled = searchQuery === '' && statusFilter === 'All';
+
+  const handleDragStart = (e, index) => {
+    if (!isOrderingEnabled) return;
+    setDraggedProjectIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnter = (e, targetIndex) => {
+    if (!isOrderingEnabled || draggedProjectIndex === null || draggedProjectIndex === targetIndex) return;
+    
+    const newProjects = [...projects];
+    const draggedProject = newProjects[draggedProjectIndex];
+    
+    newProjects.splice(draggedProjectIndex, 1);
+    newProjects.splice(targetIndex, 0, draggedProject);
+    
+    setProjects(newProjects);
+    setDraggedProjectIndex(targetIndex);
+  };
+
+  const handleDragEnd = async () => {
+    if (draggedProjectIndex === null) return;
+    setDraggedProjectIndex(null);
+    
+    // Save order to backend
+    const reorders = projects.map((p, idx) => ({ id: p.id, dashboard_order: idx }));
+    try {
+      await fetch(API_BASE_URL + '/api/projects/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reorders)
+      });
+    } catch (e) {
+      console.error('Failed to save order', e);
+    }
+  };
 
   const getActivityIcon = (type) => {
+
     if (type === 'comment') return <MessageSquare size={14} />;
     if (type === 'completed') return <CheckCircle2 size={14} />;
     return <Zap size={14} />;
@@ -144,6 +265,22 @@ export default function Dashboard() {
           <p className="text-muted" style={{ fontSize: '0.95rem' }}>{roleGreeting}</p>
         </div>
         <div className="flex items-center gap-3" style={{ animation: 'fadeSlideUp 0.4s ease-out 0.1s both' }}>
+
+          {/* Status Filter */}
+          <select 
+            className="form-control" 
+            value={statusFilter} 
+            onChange={e => setStatusFilter(e.target.value)}
+            style={{ width: '140px', padding: '9px 14px', fontSize: '0.88rem' }}
+          >
+            <option value="All">All Statuses</option>
+            <option value="Green">Green</option>
+            <option value="Amber">Amber</option>
+            <option value="Red">Red</option>
+            <option value="Paused">Paused</option>
+            <option value="Completed">Completed</option>
+          </select>
+
           {/* Search */}
           <div style={{ position: 'relative' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-faint)' }} />
@@ -291,79 +428,19 @@ export default function Dashboard() {
 
           {/* Project Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-            {filteredProjects.map(project => {
-              const requests = project.change_requests || [];
-              const totalReqs = requests.length;
-              const completedReqs = requests.filter(r => r.status === 'Completed').length;
-              const progressPct = totalReqs > 0 ? (completedReqs / totalReqs) * 100 : 0;
-              const hasProjectBlockers = (project.blockers || []).some(b => b.status === 'Active');
-              const hasBlocked = requests.some(r => r.is_blocked && r.status !== 'Completed') || hasProjectBlockers;
-              const hasEscalated = requests.some(r => r.escalated && r.status !== 'Completed');
-
-              let healthColor = '#059669', healthText = 'On Track (Green)', healthBg = 'var(--status-success-bg)', calendarHealth = 'Green';
-              let daysRemaining = null;
-
-              if (project.deadline) {
-                const deadlineDate = new Date(project.deadline);
-                const now = new Date();
-                const diffTime = deadlineDate - now;
-                daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (daysRemaining <= 2) {
-                  calendarHealth = 'Red';
-                  healthColor = '#DC2626';
-                  healthBg = 'var(--status-danger-bg)';
-                  healthText = daysRemaining < 0 ? 'Overdue' : 'Critical (Red)';
-                } else if (daysRemaining <= 4) {
-                  calendarHealth = 'Amber';
-                  healthColor = '#D97706';
-                  healthBg = 'var(--status-warning-bg)';
-                  healthText = 'Warning (Amber)';
-                } else {
-                  calendarHealth = 'Green';
-                  healthColor = '#059669';
-                  healthBg = 'var(--status-success-bg)';
-                  healthText = 'On Track (Green)';
-                }
-              } else {
-                if (requests.length > 0 || hasProjectBlockers) {
-                  const incomplete = requests.filter(r => r.status !== 'Completed');
-                  if (incomplete.length > 0 || hasProjectBlockers) {
-                    if (hasBlocked || hasEscalated) {
-                      healthColor = '#DC2626'; healthText = hasBlocked ? 'Blocked' : 'Escalated'; healthBg = 'var(--status-danger-bg)';
-                      calendarHealth = 'Red';
-                    } else if (incomplete.some(r => r.priority === 'Critical')) {
-                      healthColor = '#DC2626'; healthText = 'Critical'; healthBg = 'var(--status-danger-bg)';
-                      calendarHealth = 'Red';
-                    } else {
-                      healthColor = '#D97706'; healthText = 'In Progress'; healthBg = 'var(--status-warning-bg)';
-                      calendarHealth = 'Amber';
-                    }
-                  } else {
-                    healthText = 'All Done';
-                    healthBg = 'var(--status-success-bg)';
-                    healthColor = '#059669';
-                    calendarHealth = 'Green';
-                  }
-                }
-              }
-              
-              if (project.manual_health && project.manual_health !== 'Auto') {
-                if (project.manual_health === 'Green') {
-                  calendarHealth = 'Green'; healthColor = '#059669'; healthBg = 'var(--status-success-bg)'; healthText = 'On Track (Manual)';
-                } else if (project.manual_health === 'Amber') {
-                  calendarHealth = 'Amber'; healthColor = '#D97706'; healthBg = 'var(--status-warning-bg)'; healthText = 'Warning (Manual)';
-                } else if (project.manual_health === 'Red') {
-                  calendarHealth = 'Red'; healthColor = '#DC2626'; healthBg = 'var(--status-danger-bg)'; healthText = 'Critical (Manual)';
-                } else if (project.manual_health === 'Paused') {
-                  calendarHealth = 'Paused'; healthColor = '#6B7280'; healthBg = '#F3F4F6'; healthText = 'Paused';
-                } else if (project.manual_health === 'Completed') {
-                  calendarHealth = 'Completed'; healthColor = '#2563EB'; healthBg = '#EFF6FF'; healthText = 'Completed';
-                }
-              }
+            {filteredProjects.map((project, index) => {
+              const { calendarHealth, healthColor, healthBg, healthText, requests, totalReqs, completedReqs, progressPct, daysRemaining } = project._healthDataCache || getProjectHealthData(project);
 
               return (
-                <div key={project.id} className="glass-card stagger-card" onClick={() => navigate(`/projects/${project.id}`)} style={{ 
+                <div key={project.id} 
+                  className="glass-card stagger-card" 
+                  draggable={isOrderingEnabled}
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragEnter={(e) => handleDragEnter(e, index)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()}
+                  onClick={() => navigate(`/projects/${project.id}`)} 
+                  style={{ 
                   borderTop: `4px solid ${healthColor}`, 
                   borderLeft: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : calendarHealth === 'Paused' ? 'rgba(107, 114, 128, 0.3)' : calendarHealth === 'Completed' ? 'rgba(37, 99, 235, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,
                   borderRight: `1px solid ${calendarHealth === 'Red' ? 'rgba(220, 38, 38, 0.3)' : calendarHealth === 'Amber' ? 'rgba(217, 119, 6, 0.3)' : calendarHealth === 'Paused' ? 'rgba(107, 114, 128, 0.3)' : calendarHealth === 'Completed' ? 'rgba(37, 99, 235, 0.3)' : 'rgba(5, 150, 105, 0.3)'}`,

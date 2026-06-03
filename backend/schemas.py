@@ -145,6 +145,7 @@ class ProjectBase(BaseModel):
     developers: Optional[List[str]] = []
     status: Optional[str] = "Active"
     manual_health: Optional[str] = None
+    dashboard_order: Optional[int] = 0
 
 class ProjectCreate(ProjectBase):
     estimated_days_client: Optional[int] = None
@@ -167,6 +168,7 @@ class ProjectUpdate(BaseModel):
     client_approved_estimate: Optional[bool] = None
     status: Optional[str] = None
     manual_health: Optional[str] = None
+    dashboard_order: Optional[int] = None
 
 class Project(ProjectBase):
     id: int
@@ -186,3 +188,7 @@ class Project(ProjectBase):
 
     class Config:
         from_attributes = True
+
+class ProjectReorder(BaseModel):
+    id: int
+    dashboard_order: int
