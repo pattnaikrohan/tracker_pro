@@ -9,6 +9,17 @@ import uuid
 import re
 from datetime import datetime, timedelta
 from fastapi.staticfiles import StaticFiles
+from azure.storage.blob import BlobServiceClient, ContentSettings
+
+AZURE_STORAGE_ACCOUNT = "aawaidata"
+AZURE_CONTAINER_NAME = "aaw-tracker"
+AZURE_SAS_TOKEN = "sv=2026-02-06&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2070-06-03T17:32:21Z&st=2026-06-03T09:17:21Z&spr=https&sig=mvuZZjWA9BS9ZZvQBTPUp1ib5JRuocntFNMhl1EvmTk%3D"
+BLOB_SERVICE_URL = f"https://{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net"
+try:
+    blob_service_client = BlobServiceClient(account_url=BLOB_SERVICE_URL, credential=AZURE_SAS_TOKEN)
+except Exception as e:
+    blob_service_client = None
+    print(f"Failed to initialize BlobServiceClient: {e}")
 
 from . import schemas
 from . import config
@@ -197,11 +208,24 @@ def upload_file(req: schemas.UploadRequest, request: Request):
         header, encoded = req.base64_data.split(",", 1)
         file_ext = req.filename.split(".")[-1]
         unique_name = f"{uuid.uuid4().hex}.{file_ext}"
-        path = os.path.join(UPLOAD_DIR, unique_name)
-        with open(path, "wb") as f:
-            f.write(base64.b64decode(encoded))
-        base_url = str(request.base_url).rstrip("/")
-        return {"url": f"{base_url}/uploads/{unique_name}"}
+        
+        file_bytes = base64.b64decode(encoded)
+        
+        if blob_service_client:
+            blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER_NAME, blob=unique_name)
+            content_type = "application/octet-stream"
+            if header.startswith("data:"):
+                content_type = header.split(";")[0].replace("data:", "")
+                
+            blob_client.upload_blob(file_bytes, overwrite=True, content_settings=ContentSettings(content_type=content_type))
+            blob_url = f"{blob_client.url}?{AZURE_SAS_TOKEN}"
+            return {"url": blob_url}
+        else:
+            path = os.path.join(UPLOAD_DIR, unique_name)
+            with open(path, "wb") as f:
+                f.write(file_bytes)
+            base_url = str(request.base_url).rstrip("/")
+            return {"url": f"{base_url}/uploads/{unique_name}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
