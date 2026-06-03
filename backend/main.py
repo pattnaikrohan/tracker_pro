@@ -147,19 +147,25 @@ def load_all_projects():
     for filename in os.listdir(DATA_DIR):
         if filename.endswith(".json"):
             path = os.path.join(DATA_DIR, filename)
-            with open(path, 'r', encoding='utf-8') as f:
-                projects.append(json.load(f))
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    projects.append(json.load(f))
+            except Exception:
+                continue
     return projects
 
 def find_request_in_all_projects(request_id: int):
     for filename in os.listdir(DATA_DIR):
         if filename.endswith(".json"):
             path = os.path.join(DATA_DIR, filename)
-            with open(path, 'r', encoding='utf-8') as f:
-                proj_data = json.load(f)
-            for req in proj_data.get("change_requests", []):
-                if req["id"] == request_id:
-                    return proj_data, req
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    proj_data = json.load(f)
+                for req in proj_data.get("change_requests", []):
+                    if req["id"] == request_id:
+                        return proj_data, req
+            except Exception:
+                continue
     return None, None
 
 # ═══ AUTH ═══
@@ -582,25 +588,27 @@ async def create_blocker(project_id: int, blocker: schemas.BlockerCreate, role: 
     return new_blocker
 
 @app.put("/api/blockers/{blocker_id}", response_model=schemas.Blocker)
-async def update_blocker(blocker_id: int, update: schemas.BlockerUpdate):
+async def update_blocker(blocker_id: int, blocker_update: schemas.BlockerUpdate):
     """Resolve or update a blocker. Searched across all projects."""
     for filename in os.listdir(DATA_DIR):
-        if not filename.endswith(".json"):
-            continue
-        path = os.path.join(DATA_DIR, filename)
-        with open(path, 'r', encoding='utf-8') as f:
-            proj_data = json.load(f)
-        for blocker in proj_data.get("blockers", []):
-            if blocker["id"] == blocker_id:
-                update_dict = update.dict(exclude_unset=True)
-                if update_dict.get("status") == "Resolved" and blocker.get("status") != "Resolved":
-                    blocker["resolved_at"] = datetime.utcnow().isoformat()
-                for k, v in update_dict.items():
-                    blocker[k] = v
-                write_project_data(proj_data["id"], proj_data)
-                log_event("UPDATE_BLOCKER", {"blocker_id": blocker_id, "status": blocker["status"]})
-                await manager.broadcast({"type": "UPDATE"})
-                return blocker
+        if filename.endswith(".json"):
+            path = os.path.join(DATA_DIR, filename)
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    proj_data = json.load(f)
+                for blocker in proj_data.get("blockers", []):
+                    if blocker["id"] == blocker_id:
+                        update_data = blocker_update.dict(exclude_unset=True)
+                        for key, value in update_data.items():
+                            blocker[key] = value
+                        if "status" in update_data and update_data["status"] == "Resolved":
+                            blocker["resolved_at"] = datetime.utcnow().isoformat()
+                        write_project_data(proj_data["id"], proj_data)
+                        log_event("UPDATE_BLOCKER", {"blocker_id": blocker["id"], "status": blocker["status"]})
+                        await manager.broadcast({"type": "UPDATE"})
+                        return blocker
+            except Exception:
+                continue
     raise HTTPException(status_code=404, detail="Blocker not found")
 
 @app.post("/api/blockers/{blocker_id}/comments", response_model=schemas.Comment)
