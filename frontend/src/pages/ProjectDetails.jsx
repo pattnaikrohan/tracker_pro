@@ -19,6 +19,27 @@ const STATUS_COLORS = {
   Completed: { border: 'var(--status-success)', bg: 'var(--status-success-bg)' },
 };
 
+
+const getBusinessDaysRemaining = (now, deadlineDate) => {
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
+  if (start.getTime() === end.getTime()) return 0;
+  
+  const isOverdue = start > end;
+  const dateCursor = new Date(isOverdue ? end : start);
+  const targetDate = isOverdue ? start : end;
+  
+  let businessDays = 0;
+  dateCursor.setDate(dateCursor.getDate() + 1);
+  
+  while (dateCursor <= targetDate) {
+    const dayOfWeek = dateCursor.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) businessDays++;
+    dateCursor.setDate(dateCursor.getDate() + 1);
+  }
+  return isOverdue ? -businessDays : businessDays;
+};
+
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -508,8 +529,7 @@ export default function ProjectDetails() {
     }
     const deadlineDate = new Date(req.deadline);
     const now = new Date();
-    const diffTime = deadlineDate - now;
-    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const daysRemaining = getBusinessDaysRemaining(now, deadlineDate);
 
     if (daysRemaining <= 2) {
       return {
