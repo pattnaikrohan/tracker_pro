@@ -698,18 +698,19 @@ def get_activity_feed(limit: int = 20):
     projects = load_all_projects()
     activities = []
     for proj in projects:
-        for req in proj.get("change_requests", []):
-            activities.append({
-                "type": "request_created", "project": proj["title"], "project_id": proj["id"],
-                "request_title": req["title"], "request_id": req["id"],
-                "timestamp": req["created_at"], "detail": f"New {req['type']}: {req['title']}"
-            })
         # Project creation activity
         if proj.get("created_at"):
             activities.append({
                 "type": "project_created", "project": proj["title"], "project_id": proj["id"],
                 "request_title": "Project Created", "request_id": None,
                 "timestamp": proj["created_at"], "detail": f"New Project: {proj['title']}"
+            })
+            
+        for req in proj.get("change_requests", []):
+            activities.append({
+                "type": "request_created", "project": proj["title"], "project_id": proj["id"],
+                "request_title": req["title"], "request_id": req["id"],
+                "timestamp": req["created_at"], "detail": f"New {req['type']}: {req['title']}"
             })
             if req.get("completed_at"):
                 activities.append({
